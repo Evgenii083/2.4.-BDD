@@ -1,7 +1,8 @@
-package Page;
+package page;
 
-import Data.DataHelper;
+import data.DataHelper;
 import com.codeborne.selenide.SelenideElement;
+import org.openqa.selenium.Keys;
 
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.$x;
@@ -22,5 +23,9 @@ public class ReplenishPage {
         from.setValue(DataHelper.getDebitCard(deductFrom));
         submit.click();
         new DashboardPage();
+    }
+    public void cleanInput(){
+        amount.sendKeys(Keys.chord(Keys.SHIFT,Keys.HOME),Keys.DELETE);
+        from.sendKeys(Keys.chord(Keys.SHIFT,Keys.HOME),Keys.DELETE);
     }
 }

@@ -1,14 +1,15 @@
 package tests;
 
-import Data.DataHelper;
-import Page.DashboardPage;
-import Page.LoginPage;
-import Page.ReplenishPage;
+import data.DataHelper;
+import page.DashboardPage;
+import page.LoginPage;
+import page.ReplenishPage;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static com.codeborne.selenide.Selenide.open;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class BankFormTest {
     @BeforeEach
@@ -17,51 +18,26 @@ public class BankFormTest {
     }
 
     @Test
-    public void shouldTransferMoneyFromCardToCard() {
-        var LoginPage = new LoginPage();
-        var authInfo = DataHelper.getAuthInfo();
-        var verificationPage = LoginPage.validLogin(authInfo);
-        var verificationCode = DataHelper.getVerificationCode(authInfo);
-        verificationPage.validVerify(verificationCode);
-        var DashboardPage = new DashboardPage();
-        var ReplenishPage = new ReplenishPage();
-        DashboardPage.addTo(0);
-        ReplenishPage.moneyTransfer(500, 1);
-
-    }
-
-    @Test
-    public void shouldGetBalance() {
-        var LoginPage = new LoginPage();
-        var authInfo = DataHelper.getAuthInfo();
-        var verificationPage = LoginPage.validLogin(authInfo);
-        var verificationCode = DataHelper.getVerificationCode(authInfo);
-        verificationPage.validVerify(verificationCode);
-        var DashboardPage = new DashboardPage();
-        var balanceFirstCard = DashboardPage.getBalanceForCard(0);
-        var balanceSecondCard = DashboardPage.getBalanceForCard(1);
-        System.out.println(balanceFirstCard + "\n" + balanceSecondCard);
-    }
-
-    @Test
     public void shouldTransferMoneyFromCardToCardAndCompereBalance() {
         var LoginPage = new LoginPage();
-        var DashboardPage = new DashboardPage();
-        var ReplenishPage = new ReplenishPage();
         var authInfo = DataHelper.getAuthInfo();
         var verificationPage = LoginPage.validLogin(authInfo);
         var verificationCode = DataHelper.getVerificationCode(authInfo);
         verificationPage.validVerify(verificationCode);
-        var balance = DashboardPage.getBalanceForCard(0);
-        DashboardPage.addTo(0);
-        ReplenishPage.moneyTransfer(2500, 1);
+        var dashboardPage = new DashboardPage();
+        var balanceFirstCard = dashboardPage.getBalanceForCard(0);
+        var balanceSecondCard = dashboardPage.getBalanceForCard(1);
+        dashboardPage.addTo(0);
+        var replenishPage = new ReplenishPage();
+        replenishPage.moneyTransfer(2500, 1);
+        dashboardPage.addTo(1);
+        replenishPage.cleanInput();
+        replenishPage.moneyTransfer(2500, 0);
 
-        DashboardPage.addTo(1);
-        ReplenishPage.moneyTransfer(2500, 0);
-        var secondBalance = DashboardPage.getBalanceForCard(0);
-
-        System.out.println(balance + "\n" + secondBalance);
-        Assertions.assertEquals(balance, secondBalance);
+        Assertions.assertAll(
+                () -> assertTrue(balanceFirstCard == dashboardPage.getBalanceForCard(0)),
+                () -> assertTrue(balanceSecondCard == dashboardPage.getBalanceForCard(1))
+        );
     }
 
     @Test
@@ -71,12 +47,15 @@ public class BankFormTest {
         var verificationPage = LoginPage.validLogin(authInfo);
         var verificationCode = DataHelper.getVerificationCode(authInfo);
         verificationPage.validVerify(verificationCode);
-        var DashboardPage = new DashboardPage();
-        var ReplenishPage = new ReplenishPage();
-        DashboardPage.addTo(1);
-        ReplenishPage.moneyTransfer(500_000, 0);
-        System.out.println(DashboardPage.getBalanceForCard(0));
-        Assertions.assertTrue(DashboardPage.getBalanceForCard(0) >= 0);
-    }
+        var dashboardPage = new DashboardPage();
+        dashboardPage.addTo(1);
+        var replenishPage = new ReplenishPage();
+        replenishPage.moneyTransfer(500_000, 0);
+        System.out.println(dashboardPage.getBalanceForCard(0));
 
+        Assertions.assertAll(
+                () -> assertTrue(dashboardPage.getBalanceForCard(0) >= 0),
+                () -> assertTrue(dashboardPage.getBalanceForCard(1) >= 0)
+        );
+    }
 }

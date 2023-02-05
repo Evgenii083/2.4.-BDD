@@ -1,4 +1,4 @@
-package Page;
+package page;
 
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
@@ -9,13 +9,14 @@ import static com.codeborne.selenide.Selenide.*;
 
 public class DashboardPage {
     private SelenideElement dashboardHeading = $x("//*[contains(text(),'Ваши карты')]");
-    ElementsCollection buttons = $$("[data-test-id=action-deposit]");
-    ElementsCollection cards = $$(".list__item div");
+    private ElementsCollection buttons = $$("[data-test-id=action-deposit]");
+    private ElementsCollection cards = $$(".list__item div");
     private final String balanceStart = "баланс: ";
     private final String balanceFinish = " р.";
 
 
-    public DashboardPage() {
+    public void visibleCheck() {
+        dashboardHeading.shouldBe(visible);
     }
 
     public ReplenishPage addTo(int card) {
