@@ -18,44 +18,90 @@ public class BankFormTest {
     }
 
     @Test
-    public void shouldTransferMoneyFromCardToCardAndCompereBalance() {
+    public void happyTransactionFromFirstCardToSecond() {
         var LoginPage = new LoginPage();
         var authInfo = DataHelper.getAuthInfo();
         var verificationPage = LoginPage.validLogin(authInfo);
         var verificationCode = DataHelper.getVerificationCode(authInfo);
         verificationPage.validVerify(verificationCode);
         var dashboardPage = new DashboardPage();
-        var balanceFirstCard = dashboardPage.getBalanceForCard(0);
-        var balanceSecondCard = dashboardPage.getBalanceForCard(1);
-        dashboardPage.addTo(0);
+        var initialFirstCardBalance = dashboardPage.getBalanceForCard(0);
+        var initialSecondCardBalance = dashboardPage.getBalanceForCard(1);
+        dashboardPage.topUpCard(1);
         var replenishPage = new ReplenishPage();
-        replenishPage.moneyTransfer(2500, 1);
-        dashboardPage.addTo(1);
-        replenishPage.cleanInput();
-        replenishPage.moneyTransfer(2500, 0);
+        var transferSum = DataHelper.getValidTransferSum(initialFirstCardBalance);
+        var writeOffCard = DataHelper.getDebitCard("first");
+        replenishPage.moneyTransfer(writeOffCard, transferSum);
+        dashboardPage.visibleCheck();
 
         Assertions.assertAll(
-                () -> assertTrue(balanceFirstCard == dashboardPage.getBalanceForCard(0)),
-                () -> assertTrue(balanceSecondCard == dashboardPage.getBalanceForCard(1))
+                () -> assertTrue(initialFirstCardBalance > dashboardPage.getBalanceForCard(0)),
+                () -> assertTrue(initialSecondCardBalance < dashboardPage.getBalanceForCard(1))
         );
     }
 
     @Test
-    public void shouldNotMakeMoneyTransferIfTheTransferAmountIsTooMuch() {
+    public void happyTransactionFromSecondCardToFirst() {
         var LoginPage = new LoginPage();
         var authInfo = DataHelper.getAuthInfo();
         var verificationPage = LoginPage.validLogin(authInfo);
         var verificationCode = DataHelper.getVerificationCode(authInfo);
         verificationPage.validVerify(verificationCode);
         var dashboardPage = new DashboardPage();
-        dashboardPage.addTo(1);
+        var initialFirstCardBalance = dashboardPage.getBalanceForCard(0);
+        var initialSecondCardBalance = dashboardPage.getBalanceForCard(1);
+        dashboardPage.topUpCard(0);
         var replenishPage = new ReplenishPage();
-        replenishPage.moneyTransfer(500_000, 0);
-        System.out.println(dashboardPage.getBalanceForCard(0));
+        var transferSum = DataHelper.getValidTransferSum(initialFirstCardBalance);
+        var writeOffCard = DataHelper.getDebitCard("second");
+        replenishPage.moneyTransfer(writeOffCard, transferSum);
+        dashboardPage.visibleCheck();
 
         Assertions.assertAll(
-                () -> assertTrue(dashboardPage.getBalanceForCard(0) >= 0),
-                () -> assertTrue(dashboardPage.getBalanceForCard(1) >= 0)
+                () -> assertTrue(initialFirstCardBalance < dashboardPage.getBalanceForCard(0)),
+                () -> assertTrue(initialSecondCardBalance > dashboardPage.getBalanceForCard(1))
         );
+    }
+
+    @Test
+    public void shouldNotMakeManyTransferInCaseTransferSumIsTooMuch() {
+        var LoginPage = new LoginPage();
+        var authInfo = DataHelper.getAuthInfo();
+        var verificationPage = LoginPage.validLogin(authInfo);
+        var verificationCode = DataHelper.getVerificationCode(authInfo);
+        verificationPage.validVerify(verificationCode);
+        var dashboardPage = new DashboardPage();
+        var initialFirstCardBalance = dashboardPage.getBalanceForCard(0);
+        var initialSecondCardBalance = dashboardPage.getBalanceForCard(1);
+        dashboardPage.topUpCard(0);
+        var replenishPage = new ReplenishPage();
+        var transferSum = DataHelper.getInvalidTransferSum(initialSecondCardBalance);
+        var writeOffCard = DataHelper.getDebitCard("second");
+        replenishPage.moneyTransfer(writeOffCard, transferSum);
+        dashboardPage.visibleCheck();
+
+        Assertions.assertAll(
+                () -> assertTrue(dashboardPage.getBalanceForCard(1) > 0),
+                () -> assertTrue(dashboardPage.getBalanceForCard(0) == initialFirstCardBalance)
+        );
+    }
+
+    @Test
+    public void shouldBeErrorMessageInCaseWrongVerificationCode(){
+        var LoginPage = new LoginPage();
+        var authInfo = DataHelper.getAuthInfo();
+        var verificationPage = LoginPage.validLogin(authInfo);
+        var verificationCode = DataHelper.getInvalidVerificationCode(authInfo);
+        verificationPage.validVerify(verificationCode);
+        verificationPage.errorMessage();
+
+        verificationPage.validVerify(verificationCode);
+        verificationPage.errorMessage();
+
+        verificationPage.validVerify(verificationCode);
+        verificationPage.errorMessage();
+
+        verificationPage.validVerify(verificationCode);
+        verificationPage.setErrorMessage2();
     }
 }

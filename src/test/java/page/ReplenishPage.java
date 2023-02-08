@@ -4,8 +4,7 @@ import data.DataHelper;
 import com.codeborne.selenide.SelenideElement;
 import org.openqa.selenium.Keys;
 
-import static com.codeborne.selenide.Selenide.$;
-import static com.codeborne.selenide.Selenide.$x;
+import static com.codeborne.selenide.Selenide.*;
 
 public class ReplenishPage {
     private SelenideElement replenishHeading = $x("//*[contains(text(),'Пополнение карты')]");
@@ -18,14 +17,10 @@ public class ReplenishPage {
 
     public ReplenishPage() {
     }
-    public void moneyTransfer(int transferSum, int deductFrom){
-        amount.setValue(String.valueOf(transferSum));
-        from.setValue(DataHelper.getDebitCard(deductFrom));
+    public void moneyTransfer(String card,int sum){
+        amount.setValue(String.valueOf(sum));
+        from.setValue(card);
         submit.click();
-        new DashboardPage();
     }
-    public void cleanInput(){
-        amount.sendKeys(Keys.chord(Keys.SHIFT,Keys.HOME),Keys.DELETE);
-        from.sendKeys(Keys.chord(Keys.SHIFT,Keys.HOME),Keys.DELETE);
-    }
+
 }
