@@ -22,7 +22,7 @@ public class DashboardPage {
         dashboardHeading.shouldBe(visible);
     }
 
-    public ReplenishPage topUpCard (int card) {
+    public ReplenishPage topUpCard(int card) {
         chooseCard.get(card).click();
         return new ReplenishPage();
     }

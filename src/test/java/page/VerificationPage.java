@@ -21,11 +21,12 @@ public class VerificationPage {
     }
 
     public void errorMessage() {
-        errorMessage.shouldBe(visible).shouldHave().shouldHave(Condition.text("Ошибка" + "\n" +"Ошибка!"));
+        errorMessage.shouldBe(visible).shouldHave().shouldHave(Condition.text("Ошибка" + "\n" + "Ошибка!"));
         notificationContent.shouldBe(visible).shouldHave(Condition.text("Неверно указан код! Попробуйте ещё раз."));
     }
-    public void setErrorMessage2(){
-        errorMessage.shouldBe(visible).shouldHave().shouldHave(Condition.text("Ошибка" + "\n" +"Ошибка!"));
+
+    public void setErrorMessage2() {
+        errorMessage.shouldBe(visible).shouldHave().shouldHave(Condition.text("Ошибка" + "\n" + "Ошибка!"));
         notificationContent.shouldBe(visible).shouldHave(Condition.text("Превышено количество попыток ввода кода!"));
     }
 
@@ -34,11 +35,4 @@ public class VerificationPage {
         verifyButton.click();
         return new DashboardPage();
     }
-
-    public DashboardPage invalidVerify(DataHelper.VerificationCode InvalidVerificationCode) {
-        entryField.setValue(InvalidVerificationCode.getCode());
-        verifyButton.click();
-        return new DashboardPage();
-    }
-
 }

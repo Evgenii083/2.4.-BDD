@@ -17,7 +17,8 @@ public class ReplenishPage {
 
     public ReplenishPage() {
     }
-    public void moneyTransfer(String card,int sum){
+
+    public void moneyTransfer(String card, int sum) {
         amount.setValue(String.valueOf(sum));
         from.setValue(card);
         submit.click();

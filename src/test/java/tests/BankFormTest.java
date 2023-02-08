@@ -87,7 +87,7 @@ public class BankFormTest {
     }
 
     @Test
-    public void shouldBeErrorMessageInCaseWrongVerificationCode(){
+    public void shouldBeErrorMessageInCaseWrongVerificationCode() {
         var LoginPage = new LoginPage();
         var authInfo = DataHelper.getAuthInfo();
         var verificationPage = LoginPage.validLogin(authInfo);
