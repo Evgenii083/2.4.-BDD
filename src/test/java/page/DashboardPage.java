@@ -13,6 +13,7 @@ import static com.codeborne.selenide.Selenide.*;
 public class DashboardPage {
     private SelenideElement dashboardHeading = $x("//*[contains(text(),'Ваши карты')]");
     private ElementsCollection chooseCard = $$("[data-test-id=action-deposit]");
+
     private ElementsCollection cards = $$(".list__item div");
     private final String balanceStart = "баланс: ";
     private final String balanceFinish = " р.";
@@ -29,7 +30,7 @@ public class DashboardPage {
 
     public int getBalanceForCard(int index) {
         val text = cards.get(index).text();
-        return extractBalance(String.valueOf(text));
+        return extractBalance(text);
     }
 
 
