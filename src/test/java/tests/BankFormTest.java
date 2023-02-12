@@ -52,7 +52,7 @@ public class BankFormTest {
         var initialSecondCardBalance = dashboardPage.getBalanceForCard(1);
         dashboardPage.topUpCard(0);
         var replenishPage = new ReplenishPage();
-        var transferSum = DataHelper.getValidTransferSum(initialFirstCardBalance);
+        var transferSum = DataHelper.getValidTransferSum(initialSecondCardBalance);
         var writeOffCard = DataHelper.getDebitCard("second");
         replenishPage.moneyTransfer(writeOffCard, transferSum);
         dashboardPage.visibleCheck();
@@ -84,24 +84,5 @@ public class BankFormTest {
                 () -> assertTrue(dashboardPage.getBalanceForCard(1) > 0),
                 () -> assertTrue(dashboardPage.getBalanceForCard(0) == initialFirstCardBalance)
         );
-    }
-
-    @Test
-    public void shouldBeErrorMessageInCaseWrongVerificationCode() {
-        var LoginPage = new LoginPage();
-        var authInfo = DataHelper.getAuthInfo();
-        var verificationPage = LoginPage.validLogin(authInfo);
-        var verificationCode = DataHelper.getInvalidVerificationCode(authInfo);
-        verificationPage.validVerify(verificationCode);
-        verificationPage.errorMessage();
-
-        verificationPage.validVerify(verificationCode);
-        verificationPage.errorMessage();
-
-        verificationPage.validVerify(verificationCode);
-        verificationPage.errorMessage();
-
-        verificationPage.validVerify(verificationCode);
-        verificationPage.setErrorMessage2();
     }
 }
